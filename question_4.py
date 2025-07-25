@@ -111,10 +111,13 @@ class Block:
 
         # Hash the block and check if it starts with the required number of zeros
         hash_result = Block.hash_block(self)
+
+        # In case the hash already satisfies the difficulty requirement, we can skip the mining process
+        # If not, we will keep incrementing the nonce until we find a valid hash
         while not hash_result.startswith('0' * DIFFICULTY):
-            self.nonce += 1
+            self.nonce += 1 # Update the nonce
             self.confirm_time = unix_time()  # Update the confirm_time to the current time
-            hash_result = Block.hash_block(self)
+            hash_result = Block.hash_block(self) # Hash the block again with the new nonce
 
             # Where the cool effect happens
             if DEBUG:
@@ -128,6 +131,7 @@ class Block:
                 console_hash_output += hash_result[DIFFICULTY:]
                 print(f"\rMining block { self.block_id } with nonce { self.nonce }: { ''.join(console_hash_output) }", end='\n')
 
+        # Once we find a valid nonce, we can print the result
         self.end_time = unix_time()
 
         if DEBUG:
